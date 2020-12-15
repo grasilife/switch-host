@@ -1,6 +1,6 @@
 <template>
   <div class="comp-templete-list">
-    setting
+    <el-button type="primary">主要按钮</el-button>
   </div>
 </template>
 
@@ -40,4 +40,9 @@ export default {
 };
 </script>
 
-<style lang="less" rel="stylesheet/less" scoped></style>
+<style lang="less" rel="stylesheet/less" scoped>
+.comp-templete-list {
+  width: 100px;
+  height: 100px;
+}
+</style>

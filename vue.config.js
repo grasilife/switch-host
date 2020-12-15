@@ -38,5 +38,5 @@ module.exports = {
       filename: "popup.html"
     }
   },
-  productionSourceMap: false,
+  productionSourceMap: false
 };

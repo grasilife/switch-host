@@ -9,10 +9,6 @@
     "default_popup": "popup.html"
   },
   "options_page": "setting.html",
-  "options_ui": {
-    "page": "setting.html",
-    "chrome_style": true
-  },
   "content_scripts": [],
   "background": {
     "scripts": ["background.js"],
