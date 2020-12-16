@@ -80,9 +80,9 @@ export default {
 
 <style lang="less" rel="stylesheet/less" scoped>
 .page-popup {
-  width: 400px;
+  width: 380px;
   height: 500px;
-  background: #eee;
+  background: #e8eaec;
   padding: 0px 8px 0px 8px;
   .titleContiner {
     height: 52px;
