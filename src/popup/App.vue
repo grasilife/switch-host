@@ -66,7 +66,7 @@ export default {
   width: 400px;
   height: 500px;
   background: #eee;
-  padding: 12px 12px 12px 12px;
+  padding: 6px 6px 6px 6px;
   .titleContiner {
     height: 32px;
     .image {
