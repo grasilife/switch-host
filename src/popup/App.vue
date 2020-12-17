@@ -66,7 +66,7 @@
                 </a-form-model-item>
                 <a-form-model-item class="buttonStyle">
                   <a-button type="primary" @click="submitForm('ruleForm')">
-                    添加
+                    {{ handleText }}
                   </a-button>
                 </a-form-model-item>
               </a-form-model>
@@ -149,6 +149,8 @@ export default {
       }
     };
     return {
+      editName: "",
+      handleText: "添加",
       columns: [
         {
           title: "网关名称",
@@ -227,7 +229,11 @@ export default {
 
   methods: {
     gatewayEdit(record) {
+      this.handleText = "编辑";
       console.log(record, "id, record");
+      this.ruleForm.name = record.name;
+      this.ruleForm.address = record.address;
+      this.editName = record.name;
     },
     gatewayRemove(record) {
       console.log(record, "id, record");
@@ -261,7 +267,23 @@ export default {
             }
           }
           if (target == null) {
-            this.gatewayList.push(obj);
+            if (this.handleText == "添加") {
+              this.gatewayList.push(obj);
+              this.ruleForm.name = "";
+              this.ruleForm.address = "";
+            } else {
+              for (let i = 0; i < this.gatewayList.length; i++) {
+                if (this.editName == this.gatewayList[i].name) {
+                  this.gatewayList[i].name = this.ruleForm.name;
+                  this.gatewayList[i].address = this.ruleForm.address;
+                  this.handleText = "添加";
+                  this.$message.success("编辑成功");
+                  this.ruleForm.name = "";
+                  this.ruleForm.address = "";
+                  break;
+                }
+              }
+            }
           }
         } else {
           console.log("error submit!!");
