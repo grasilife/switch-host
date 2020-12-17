@@ -76,17 +76,25 @@
               :data-source="gatewayList"
               :pagination="false"
               bordered
-              rowKey="id"
+              rowKey="name"
             >
-              <div slot="operation" slot-scope="">
+              <div slot="operation" slot-scope="record">
                 <template>
                   <div class="handle" style="float:left;padding-right:12px;">
-                    <a-button type="primary" size="small">
+                    <a-button
+                      type="primary"
+                      size="small"
+                      @click="gatewayEdit(record)"
+                    >
                       编辑
                     </a-button>
                   </div>
                   <div class="handle">
-                    <a-button type="danger" size="small">
+                    <a-button
+                      type="danger"
+                      size="small"
+                      @click="gatewayRemove(record)"
+                    >
                       删除
                     </a-button>
                   </div>
@@ -145,20 +153,17 @@ export default {
         {
           title: "网关名称",
           dataIndex: "name",
-          key: "name",
           ellipsis: true,
           align: "center"
         },
         {
           title: "网关地址",
           dataIndex: "address",
-          key: "address",
           ellipsis: true,
           align: "center"
         },
         {
           title: "操作",
-          dataIndex: "operation",
           ellipsis: true,
           width: 140,
           scopedSlots: { customRender: "operation" },
@@ -188,11 +193,10 @@ export default {
       switchState: false,
       tabState: "switch",
       gatewayList: [
-        {
-          name: "localhost",
-          address: "127.0.0.1",
-          id: 0
-        }
+        // {
+        //   name: "localhost",
+        //   address: "127.0.0.1"
+        // }
       ],
       list: [
         {
@@ -222,15 +226,43 @@ export default {
   destroyed() {},
 
   methods: {
+    gatewayEdit(record) {
+      console.log(record, "id, record");
+    },
+    gatewayRemove(record) {
+      console.log(record, "id, record");
+      let target = null;
+      for (let i = 0; i < this.gatewayList.length; i++) {
+        if (record.name == this.gatewayList[i].name) {
+          target = i;
+          break;
+        }
+      }
+      console.log(target, "target");
+      if (target) {
+        this.gatewayList.splice(target, 1);
+      }
+    },
     submitForm(formName) {
       console.log(formName, "formName");
       this.$refs[formName].validate(valid => {
         if (valid) {
           let obj = {
-            ...this.ruleForm,
-            id: this.gatewayList.length
+            ...this.ruleForm
           };
-          this.gatewayList.push(obj);
+          let target = null;
+          for (let i = 0; i < this.gatewayList.length; i++) {
+            //校验名称是否重复
+            if (this.ruleForm.name == this.gatewayList[i].name) {
+              //名称重读
+              target = i;
+              this.$message.error("网关名称重复, 请修改名称");
+              break;
+            }
+          }
+          if (target == null) {
+            this.gatewayList.push(obj);
+          }
         } else {
           console.log("error submit!!");
           return false;
