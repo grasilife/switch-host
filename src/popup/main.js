@@ -1,8 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
 import store from "./store";
-import "./plugins/element-ui";
-import "./plugins/view-design";
+import "./plugins/ant-design-vue";
 import "./common/styles//global.less";
 Vue.config.productionTip = false;
 

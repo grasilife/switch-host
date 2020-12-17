@@ -4,71 +4,49 @@
       <img src="../assets/切换.png" alt="" class="image" />
       <div class="title">环境切换</div>
       <div class="switch">
-        <i-switch size="large" @on-change="switchChange" v-model="switchState">
-          <span slot="open">开启</span>
-          <span slot="close">关闭</span>
-        </i-switch>
+        <a-switch
+          v-model="switchState"
+          checked-children="开"
+          un-checked-children="关"
+          @change="switchChange"
+        />
       </div>
     </div>
-    <Card class="card">
+    <a-card :bordered="false" class="card">
       <div style="text-align:center">
         <div class="tabContainer">
-          <Tabs value="name1" v-model="tabState" @on-click="tabClick">
-            <TabPane label="切换" name="switch"></TabPane>
-            <TabPane label="白名单" name="blackList"></TabPane>
-          </Tabs>
+          <a-tabs @change="tabClick" v-model="tabState">
+            <a-tab-pane key="switch" tab="切换"> </a-tab-pane>
+            <a-tab-pane key="blackList" tab="白名单"> </a-tab-pane>
+            <a-tab-pane key="gateway" tab="网关"> </a-tab-pane>
+          </a-tabs>
         </div>
         <div class="container">
           <div class="list" v-show="tabState == 'switch'">
-            <List border>
-              <ListItem>
-                <ListItemMeta title="正式环境" class="title" />
-                <template slot="extra">
-                  <i-switch
-                    size="large"
-                    @on-change="switchChangeOnline"
-                    v-model="onlineState"
-                  >
-                    <span slot="open">开启</span>
-                    <span slot="close">关闭</span>
-                  </i-switch>
-                </template>
-              </ListItem>
-              <ListItem>
-                <ListItemMeta title="灰度环境" class="title" />
-                <template slot="extra">
-                  <i-switch
-                    size="large"
-                    @on-change="switchChangeGray"
-                    v-model="grayState"
-                  >
-                    <span slot="open">开启</span>
-                    <span slot="close">关闭</span>
-                  </i-switch>
-                </template>
-              </ListItem>
-              <ListItem>
-                <ListItemMeta title="测试环境" class="title" />
-                <template slot="extra">
-                  <i-switch
-                    size="large"
-                    @on-change="switchChangeDev"
-                    v-model="devState"
-                  >
-                    <span slot="open">开启</span>
-                    <span slot="close">关闭</span>
-                  </i-switch>
-                </template>
-              </ListItem>
-            </List>
+            <a-list bordered :data-source="list">
+              <a-list-item slot="renderItem" slot-scope="item">
+                <div>{{ item.label }}</div>
+                <div>
+                  <a-switch
+                    :checked="item.value == switchkey"
+                    checked-children="开"
+                    un-checked-children="关"
+                    @change="envSwitchChange(item)"
+                  />
+                </div>
+              </a-list-item>
+            </a-list>
           </div>
           <div class="list" v-show="tabState == 'blackList'">
             <img src="../assets/logo.png" />
             <h3>A high quality UI Toolkit based on Vue.js</h3>
           </div>
+          <div class="list" v-show="tabState == 'gateway'">
+            网关
+          </div>
         </div>
       </div>
-    </Card>
+    </a-card>
   </div>
 </template>
 
@@ -92,12 +70,23 @@ export default {
 
   data() {
     return {
+      switchkey: "online",
       switchState: false,
-      onlineState: true,
-      devState: false,
-      grayState: false,
       tabState: "switch",
-      envState: "online"
+      list: [
+        {
+          label: "正式环境",
+          value: "online"
+        },
+        {
+          label: "灰度环境",
+          value: "gray"
+        },
+        {
+          label: "测试环境",
+          value: "dev"
+        }
+      ]
     };
   },
 
@@ -112,32 +101,8 @@ export default {
   destroyed() {},
 
   methods: {
-    switchChangeOnline() {
-      if (this.onlineState == true) {
-        this.devState = false;
-        this.grayState = false;
-      } else {
-        this.devState = true;
-        this.grayState = true;
-      }
-    },
-    switchChangeGray() {
-      if (this.grayState == true) {
-        this.devState = false;
-        this.onlineState = false;
-      } else {
-        this.devState = true;
-        this.onlineState = true;
-      }
-    },
-    switchChangeDev() {
-      if (this.devState == true) {
-        this.onlineState = false;
-        this.grayState = false;
-      } else {
-        this.onlineState = true;
-        this.grayState = true;
-      }
+    envSwitchChange(item) {
+      this.switchkey = item.value;
     },
     switchChange() {
       console.log(this.switchState);

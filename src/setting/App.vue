@@ -1,7 +1,5 @@
 <template>
-  <div class="comp-templete-list">
-    <el-button type="primary">主要按钮</el-button>
-  </div>
+  <div class="comp-templete-list"></div>
 </template>
 
 <script>
