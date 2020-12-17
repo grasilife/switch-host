@@ -78,7 +78,7 @@
               bordered
               rowKey="id"
             >
-              <div slot="operation" slot-scope="status, record">
+              <div slot="operation" slot-scope="">
                 <template>
                   <div class="handle" style="float:left;padding-right:12px;">
                     <a-button type="primary" size="small">
