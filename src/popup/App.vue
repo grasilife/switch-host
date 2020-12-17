@@ -81,14 +81,15 @@ export default {
 <style lang="less" rel="stylesheet/less" scoped>
 .page-popup {
   width: 380px;
-  height: 500px;
+  //   height: 500px;
   background: #e8eaec;
-  padding: 0px 8px 0px 8px;
+  padding: 0px 8px 8px 8px;
   .titleContiner {
     height: 52px;
     padding: 8px 0px 0px 0px;
+
     width: 100%;
-    float: left;
+    // float: left;
     .image {
       width: 32px;
       height: 32px;
@@ -107,16 +108,16 @@ export default {
     }
   }
   .card {
-    height: calc(100% - 60px);
+    // height: calc(100% - 60px);
     width: 100%;
     overflow: auto;
-    float: left;
+    // float: left;
     .tabContainer {
       height: 52px;
       width: 100%;
     }
     .container {
-      height: calc(100% - 52px);
+      //   height: calc(100% - 52px);
       width: 100%;
     }
   }
