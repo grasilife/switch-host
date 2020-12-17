@@ -20,7 +20,47 @@
         </div>
         <div class="container">
           <div class="list" v-show="tabState == 'switch'">
-            switch
+            <List border>
+              <ListItem>
+                <ListItemMeta title="正式环境" class="title" />
+                <template slot="extra">
+                  <i-switch
+                    size="large"
+                    @on-change="switchChangeOnline"
+                    v-model="onlineState"
+                  >
+                    <span slot="open">开启</span>
+                    <span slot="close">关闭</span>
+                  </i-switch>
+                </template>
+              </ListItem>
+              <ListItem>
+                <ListItemMeta title="灰度环境" class="title" />
+                <template slot="extra">
+                  <i-switch
+                    size="large"
+                    @on-change="switchChangeGray"
+                    v-model="grayState"
+                  >
+                    <span slot="open">开启</span>
+                    <span slot="close">关闭</span>
+                  </i-switch>
+                </template>
+              </ListItem>
+              <ListItem>
+                <ListItemMeta title="测试环境" class="title" />
+                <template slot="extra">
+                  <i-switch
+                    size="large"
+                    @on-change="switchChangeDev"
+                    v-model="devState"
+                  >
+                    <span slot="open">开启</span>
+                    <span slot="close">关闭</span>
+                  </i-switch>
+                </template>
+              </ListItem>
+            </List>
           </div>
           <div class="list" v-show="tabState == 'blackList'">
             <img src="../assets/logo.png" />
@@ -53,7 +93,11 @@ export default {
   data() {
     return {
       switchState: false,
-      tabState: "switch"
+      onlineState: true,
+      devState: false,
+      grayState: false,
+      tabState: "switch",
+      envState: "online"
     };
   },
 
@@ -68,6 +112,33 @@ export default {
   destroyed() {},
 
   methods: {
+    switchChangeOnline() {
+      if (this.onlineState == true) {
+        this.devState = false;
+        this.grayState = false;
+      } else {
+        this.devState = true;
+        this.grayState = true;
+      }
+    },
+    switchChangeGray() {
+      if (this.grayState == true) {
+        this.devState = false;
+        this.onlineState = false;
+      } else {
+        this.devState = true;
+        this.onlineState = true;
+      }
+    },
+    switchChangeDev() {
+      if (this.devState == true) {
+        this.onlineState = false;
+        this.grayState = false;
+      } else {
+        this.onlineState = true;
+        this.grayState = true;
+      }
+    },
     switchChange() {
       console.log(this.switchState);
     },
@@ -119,6 +190,9 @@ export default {
     .container {
       //   height: calc(100% - 52px);
       width: 100%;
+      .title {
+        text-align: left;
+      }
     }
   }
 }
