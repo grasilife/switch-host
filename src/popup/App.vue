@@ -24,12 +24,12 @@
         </div>
         <div class="container">
           <div class="list" v-if="tabState == 'switch'">
-            <a-list bordered :data-source="list">
+            <a-list bordered :data-source="gatewayList">
               <a-list-item slot="renderItem" slot-scope="item">
-                <div>{{ item.label }}</div>
+                <div>{{ item.name }}</div>
                 <div>
                   <a-switch
-                    :checked="item.value == switchkey"
+                    :checked="item.address == switchkey"
                     checked-children="开"
                     un-checked-children="关"
                     @change="envSwitchChange(item)"
@@ -195,10 +195,14 @@ export default {
       switchState: false,
       tabState: "switch",
       gatewayList: [
-        // {
-        //   name: "localhost",
-        //   address: "127.0.0.1"
-        // }
+        {
+          name: "灰度环境",
+          address: "124.250.113.18"
+        },
+        {
+          name: "测试环境",
+          address: "120.52.32.211"
+        }
       ],
       list: [
         {
@@ -255,7 +259,8 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let obj = {
-            ...this.ruleForm
+            ...this.ruleForm,
+            state: false
           };
           let target = null;
           for (let i = 0; i < this.gatewayList.length; i++) {
@@ -293,7 +298,14 @@ export default {
       });
     },
     envSwitchChange(item) {
-      this.switchkey = item.value;
+      this.switchkey = item.address;
+      for (let i = 0; i < this.gatewayList.length; i++) {
+        if (item.name == this.gatewayList[i].name) {
+          this.gatewayList[i].state = true;
+        } else {
+          this.gatewayList[i].state = false;
+        }
+      }
     },
     switchChange() {
       console.log(this.switchState);
