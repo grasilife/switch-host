@@ -247,8 +247,15 @@ export default {
     if (Storage.get("gatewayList")) {
       this.gatewayList = Storage.get("gatewayList");
     }
-    if (Storage.set("blackList")) {
-      this.blackList = Storage.set("blackList");
+    if (Storage.get("blackList")) {
+      this.blackList = Storage.get("blackList");
+    }
+    let domain = document.domain;
+    //如果在白名单则打开
+    for (let i = 0; i < this.blackList.length; i++) {
+      if (domain == this.blackList[i].domain) {
+        this.switchState = true;
+      }
     }
   },
 
@@ -423,6 +430,15 @@ function FindProxyForURL(url,host){
         if (target == null) {
           thisp.blackList.push(obj);
         }
+      } else {
+        //删除
+        let target = null;
+        for (let i = 0; i < thisp.blackList.length; i++) {
+          if (domain == thisp.blackList[i].domain) {
+            target = i;
+          }
+        }
+        thisp.blackList.splice(target, 1);
       }
       Storage.set("blackList", this.blackList);
     },
