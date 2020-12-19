@@ -23,7 +23,7 @@
           </a-tabs>
         </div>
         <div class="container">
-          <div class="list" v-show="tabState == 'switch'">
+          <div class="list" v-if="tabState == 'switch'">
             <a-list bordered :data-source="list">
               <a-list-item slot="renderItem" slot-scope="item">
                 <div>{{ item.label }}</div>
@@ -38,11 +38,11 @@
               </a-list-item>
             </a-list>
           </div>
-          <div class="list" v-show="tabState == 'blackList'">
+          <div class="list" v-if="tabState == 'blackList'">
             <img src="../assets/logo.png" />
             <h3>A high quality UI Toolkit based on Vue.js</h3>
           </div>
-          <div class="list" v-show="tabState == 'gateway'">
+          <div class="list" v-if="tabState == 'gateway'">
             <div class="addGateway">
               <a-form-model
                 ref="ruleForm"
@@ -102,7 +102,7 @@
               </div>
             </a-table>
           </div>
-          <div class="list" v-show="tabState == 'host'"></div>
+          <div class="list" v-if="tabState == 'host'"></div>
         </div>
       </div>
     </a-card>
@@ -245,7 +245,8 @@ export default {
         }
       }
       console.log(target, "target");
-      if (target) {
+      if (target != null) {
+        console.log(this.gatewayList, target, "jahuhauhuauh");
         this.gatewayList.splice(target, 1);
       }
     },
