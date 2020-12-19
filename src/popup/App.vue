@@ -39,8 +39,14 @@
             </a-list>
           </div>
           <div class="list" v-if="tabState == 'blackList'">
-            <img src="../assets/logo.png" />
-            <h3>A high quality UI Toolkit based on Vue.js</h3>
+            <a-table
+              :columns="blackListColumns"
+              :data-source="blackList"
+              :pagination="false"
+              bordered
+              rowKey="domin"
+            >
+            </a-table>
           </div>
           <div class="list" v-if="tabState == 'gateway'">
             <div class="addGateway">
@@ -150,6 +156,15 @@ export default {
       }
     };
     return {
+      blackList: [],
+      blackListColumns: [
+        {
+          title: "domain白名单",
+          dataIndex: "domain",
+          ellipsis: true,
+          align: "center"
+        }
+      ],
       editName: "",
       handleText: "添加",
       columns: [
@@ -229,12 +244,72 @@ export default {
   created() {},
 
   mounted() {
-    this.gatewayList = Storage.get("gatewayList");
+    if (Storage.get("gatewayList")) {
+      this.gatewayList = Storage.get("gatewayList");
+    }
+    if (Storage.set("blackList")) {
+      this.blackList = Storage.set("blackList");
+    }
   },
 
   destroyed() {},
 
   methods: {
+    getPacScript() {
+      var script = "";
+      let results = this.list.filter(it => it.enable);
+      for (var i = 0; i < results.length; i++) {
+        let info = results[i];
+        script += i === 0 ? "if" : "else if";
+        if (info.domain.indexOf("/") > 0) {
+          script +=
+            '(shExpMatch(url, "http://' +
+            info.domain +
+            '") || shExpMatch(url, "https://' +
+            info.domain +
+            '"))';
+        } else if (info.domain.indexOf("*") > -1) {
+          script += '(shExpMatch(host, "' + info.domain + '"))';
+        } else {
+          script += '(host == "' + info.domain + '")';
+        }
+        script += '{return "PROXY ' + info.target + '; DIRECT";}\n';
+      }
+      if (script) script += 'else { return "DIRECT"; }';
+
+      let data = `
+function FindProxyForURL(url,host){
+  if(shExpMatch(url, "http:*") || shExpMatch(url, "https:*")){
+    ${script}
+  } else {
+    return "DIRECT";
+  }
+}
+      `;
+      return data;
+    },
+    setPacScript() {
+      //   var script = "";
+      //   //核心函数,如果符合条件就走带来
+      //   if (this.switchState == true) {
+      //     //我们对该网站开启代理
+      //     script +=
+      //       'if(shExpMatch(url, "http://' +
+      //       '") || shExpMatch(url, "https://' +
+      //       '"))';
+      //     script += '{return "PROXY ' + info.target + '; DIRECT";}\n';
+      //   }
+      //   let data = `
+      //          function FindProxyForURL(url,host){
+      //          if(shExpMatch(url, "http:*") || shExpMatch(url, "https:*")){
+      //          ${script}
+      //          } else {
+      //          return "DIRECT";
+      //        }
+      //          }
+      //   `;
+      //   return data;
+    },
     setProxy(enable) {
       if (enable === undefined) {
         enable = Storage.get("enable");
@@ -329,7 +404,27 @@ export default {
       Storage.set("gatewayList", this.gatewayList);
     },
     switchChange() {
+      let thisp = this;
       console.log(this.switchState);
+      //将该域名加到白名单
+      let domain = document.domain;
+      if (this.switchState == true) {
+        let obj = {
+          domain: domain
+        };
+        console.log(this.blackList, "this.blackList");
+        //重复的就不添加了
+        let target = null;
+        for (let i = 0; i < thisp.blackList.length; i++) {
+          if (domain == thisp.blackList[i].domain) {
+            target = i;
+          }
+        }
+        if (target == null) {
+          thisp.blackList.push(obj);
+        }
+      }
+      Storage.set("blackList", this.blackList);
     },
     tabClick() {
       console.log(this.tabState);
