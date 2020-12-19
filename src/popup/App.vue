@@ -110,6 +110,7 @@
 </template>
 
 <script>
+import { Storage } from "./utils/storage";
 export default {
   name: "Home",
 
@@ -227,11 +228,28 @@ export default {
 
   created() {},
 
-  mounted() {},
+  mounted() {
+    this.gatewayList = Storage.get("gatewayList");
+  },
 
   destroyed() {},
 
   methods: {
+    setProxy(enable) {
+      if (enable === undefined) {
+        enable = Storage.get("enable");
+        if (enable === "") enable = true;
+        else if (enable === false) return;
+      } else {
+        Storage.set("enable", enable);
+      }
+      // let defaultMode = Storage.get('defaultMode') || 'DIRECT'
+      let config = enable
+        ? { mode: "pac_script", pacScript: { data: this.getPacScript() } }
+        : { mode: "system" };
+      window.chrome.proxy.settings.set({ scope: "regular", value: config });
+      // this.refreshDataForBk()
+    },
     gatewayEdit(record) {
       this.handleText = "编辑";
       console.log(record, "id, record");
@@ -253,6 +271,7 @@ export default {
         console.log(this.gatewayList, target, "jahuhauhuauh");
         this.gatewayList.splice(target, 1);
       }
+      Storage.set("gatewayList", this.gatewayList);
     },
     submitForm(formName) {
       console.log(formName, "formName");
@@ -291,6 +310,7 @@ export default {
               }
             }
           }
+          Storage.set("gatewayList", this.gatewayList);
         } else {
           console.log("error submit!!");
           return false;
@@ -306,6 +326,7 @@ export default {
           this.gatewayList[i].state = false;
         }
       }
+      Storage.set("gatewayList", this.gatewayList);
     },
     switchChange() {
       console.log(this.switchState);
