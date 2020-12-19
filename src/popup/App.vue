@@ -255,6 +255,7 @@ export default {
     for (let i = 0; i < this.blackList.length; i++) {
       if (domain == this.blackList[i].domain) {
         this.switchState = true;
+        this.setProxy();
       }
     }
   },
@@ -296,36 +297,32 @@ function FindProxyForURL(url,host){
       return data;
     },
     setPacScript() {
-      //   var script = "";
-      //   //核心函数,如果符合条件就走带来
-      //   if (this.switchState == true) {
-      //     //我们对该网站开启代理
-      //     script +=
-      //       'if(shExpMatch(url, "http://' +
-      //       '") || shExpMatch(url, "https://' +
-      //       '"))';
-      //     script += '{return "PROXY ' + info.target + '; DIRECT";}\n';
-      //   }
-      //   let data = `
-      //          function FindProxyForURL(url,host){
-      //          if(shExpMatch(url, "http:*") || shExpMatch(url, "https:*")){
-      //          ${script}
-      //          } else {
-      //          return "DIRECT";
-      //        }
-      //          }
-      //   `;
-      //   return data;
+      //核心函数,如果符合条件就走带来
+      if (this.switchState == true) {
+        let domain = document.domain;
+        let target = null;
+        for (let i = 0; i < this.gatewayList.length; i++) {
+          if (this.gatewayList[i].state == true) {
+            this.gatewayList[i].state = true;
+            target = this.gatewayList[i].address;
+          }
+        }
+        if (target != null) {
+          let data = `
+               function FindProxyForURL(url,host){
+               if(host == "${domain}"){
+              return "PROXY ${target}";
+               } else {
+               return "DIRECT";
+             }
+               }
+        `;
+          console.log(data, "代理函数");
+          return data;
+        }
+      }
     },
     setProxy(enable) {
-      if (enable === undefined) {
-        enable = Storage.get("enable");
-        if (enable === "") enable = true;
-        else if (enable === false) return;
-      } else {
-        Storage.set("enable", enable);
-      }
-      // let defaultMode = Storage.get('defaultMode') || 'DIRECT'
       let config = enable
         ? { mode: "pac_script", pacScript: { data: this.getPacScript() } }
         : { mode: "system" };
@@ -441,6 +438,7 @@ function FindProxyForURL(url,host){
         thisp.blackList.splice(target, 1);
       }
       Storage.set("blackList", this.blackList);
+      this.setProxy();
     },
     tabClick() {
       console.log(this.tabState);
