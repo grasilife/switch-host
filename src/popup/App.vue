@@ -102,6 +102,7 @@ export default {
   created() {},
 
   mounted() {
+    this.gatewayList = Storage.get("gatewayList");
     // console.log(Hash.create(32), "generateHash");
     // let ppp = this.getDomain("http://admin.xesv5.com/admin");
     // console.log(ppp, "ppp");
@@ -123,8 +124,7 @@ export default {
       this.gatewayList = data;
     },
     envSwitchChange(item) {
-      this.$emit("change", item);
-      this.switchkey = item.address;
+      console.log(item, "开关");
       for (let i = 0; i < this.gatewayList.length; i++) {
         if (item.name == this.gatewayList[i].name) {
           this.gatewayList[i].state = true;

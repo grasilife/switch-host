@@ -5,7 +5,7 @@
         <div>{{ item.name }}</div>
         <div>
           <a-switch
-            :checked="item.address == switchkey"
+            :checked="item.state"
             checked-children="开"
             un-checked-children="关"
             @change="change(item)"
@@ -35,9 +35,7 @@ export default {
   components: {},
 
   data() {
-    return {
-      switchkey: "online"
-    };
+    return {};
   },
 
   computed: {},
