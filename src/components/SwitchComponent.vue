@@ -39,6 +39,9 @@ export default {
       },
       switchIndex: state => {
         return state.views.app.switchIndex;
+      },
+      proxyList: state => {
+        return state.views.app.proxyList;
       }
     })
   },
@@ -52,23 +55,10 @@ export default {
   destroyed() {},
 
   methods: {
-    doProxy(hostList) {
-      if (this.switchState) {
-        Proxy.setProxy(hostList);
-      } else {
-        Proxy.cancelProxy();
-      }
-    },
     click(item) {
       this.$store.commit("views/app/envSwitchChange", item);
       this.$emit("click", item);
-      //打开代理,数据结构
-      //   {
-      //       isOpen: true,
-      //       domain: "admin.xesv5.com",
-      //       ip: "120.52.32.211"
-      //     }
-      this.doProxy();
+      this.setProxy(this.proxyList);
     }
   }
 };

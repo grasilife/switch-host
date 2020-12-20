@@ -47,6 +47,7 @@ import SwitchComponent from "@/components/SwitchComponent";
 import WhiteList from "@/components/WhiteList";
 import GatewayHandle from "@/components/GatewayHandle";
 import CommonHost from "@/components/CommonHost";
+import { mapState } from "vuex";
 export default {
   name: "App",
 
@@ -91,77 +92,29 @@ export default {
     };
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      proxyList: state => {
+        return state.views.app.proxyList;
+      }
+    })
+  },
 
   watch: {},
 
   created() {},
 
-  mounted() {
-    // console.log(Hash.create(32), "generateHash");
-    // let ppp = this.getDomain("http://admin.xesv5.com/admin");
-    // console.log(ppp, "ppp");
-    // let domain = document.domain;
-    // //如果在白名单则打开
-    // for (let i = 0; i < this.blackList.length; i++) {
-    //   if (domain == this.blackList[i].domain) {
-    //     this.switchState = true;
-    //     // this.setProxy(true);
-    //   }
-    // }
-  },
+  mounted() {},
 
   destroyed() {},
 
   methods: {
-    doProxy(hostList) {
-      if (this.switchState) {
-        Proxy.setProxy(hostList);
+    switchChange() {
+      if (this.switchState == true) {
+        Proxy.setProxy(this.proxyList);
       } else {
         Proxy.cancelProxy();
       }
-    },
-
-    switchChange() {
-      let list = [
-        {
-          isOpen: true,
-          domain: this.getDomain("http://admin.xesv5.com/admin"),
-          ip: "120.52.32.211"
-        }
-      ];
-      this.doProxy(list);
-
-      let thisp = this;
-      console.log(this.switchState);
-      //将该域名加到白名单
-      let domain = document.domain;
-      if (this.switchState == true) {
-        let obj = {
-          domain: domain
-        };
-        console.log(this.blackList, "this.blackList");
-        //重复的就不添加了
-        let target = null;
-        for (let i = 0; i < thisp.blackList.length; i++) {
-          if (domain == thisp.blackList[i].domain) {
-            target = i;
-          }
-        }
-        if (target == null) {
-          thisp.blackList.push(obj);
-        }
-      } else {
-        //删除
-        let target = null;
-        for (let i = 0; i < thisp.blackList.length; i++) {
-          if (domain == thisp.blackList[i].domain) {
-            target = i;
-          }
-        }
-        thisp.blackList.splice(target, 1);
-      }
-      //   this.setProxy(true);
     },
     tabClick() {
       console.log(this.tabState);

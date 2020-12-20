@@ -1,7 +1,13 @@
 // import { Hash } from "@/utils/generateHash";
 // import { message, notification } from "ant-design-vue";
 const state = {
-  proxyList: [],
+  proxyList: [
+    {
+      isOpen: true,
+      domain: "admin.xesv5.com",
+      ip: "120.52.32.211"
+    }
+  ],
   whiteList: [
     {
       name: "resource.xesv5.com",
@@ -62,6 +68,10 @@ const mutations = {
   },
   envSwitchChange(state, paylod) {
     state.switchIndex = { ...paylod };
+    //当这个环境切换后,更新proxyList
+    for (let i = 0; i < state.proxyList; i++) {
+      state.proxyList[i].ip = state.switchIndex.address;
+    }
   },
   whiteListRemove(state, paylod) {
     console.log(paylod, "paylod");
