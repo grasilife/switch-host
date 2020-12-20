@@ -5,6 +5,11 @@ const state = {
   proxyList: [
     {
       isOpen: true,
+      domain: "resource.xesv5.com",
+      ip: "120.52.32.211"
+    },
+    {
+      isOpen: true,
       domain: "admin.xesv5.com",
       ip: "120.52.32.211"
     }
