@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import { Storage } from "@/utils/storage";
 import { Proxy } from "@/utils/proxy";
 import SwitchComponent from "@/components/SwitchComponent";
 import WhiteList from "@/components/WhiteList";
@@ -162,7 +161,6 @@ export default {
         }
         thisp.blackList.splice(target, 1);
       }
-      Storage.set("blackList", this.blackList);
       //   this.setProxy(true);
     },
     tabClick() {

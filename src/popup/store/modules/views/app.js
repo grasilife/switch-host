@@ -1,6 +1,7 @@
 // import { Hash } from "@/utils/generateHash";
 // import { message, notification } from "ant-design-vue";
 const state = {
+  proxyList: [],
   whiteList: [
     {
       name: "resource.xesv5.com",
@@ -33,6 +34,9 @@ const state = {
   ]
 };
 const mutations = {
+  updateProxyList(state, paylod) {
+    state.proxyList = paylod;
+  },
   gatewayRemove(state, paylod) {
     console.log(paylod, "paylod");
     let target = null;
@@ -68,7 +72,6 @@ const mutations = {
         break;
       }
     }
-    console.log(target, "target");
     if (target != null) {
       console.log(state.whiteList, target, "jahuhauhuauh");
       state.whiteList.splice(target, 1);

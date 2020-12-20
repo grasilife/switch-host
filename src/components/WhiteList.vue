@@ -44,8 +44,8 @@
 
 <script>
 import { Hash } from "@/utils/generateHash";
-import { Storage } from "@/utils/storage";
 import { mapState } from "vuex";
+import { Proxy } from "@/utils/proxy";
 export default {
   name: "WhiteList",
 
@@ -111,24 +111,43 @@ export default {
     ...mapState({
       whiteList: state => {
         return state.views.app.whiteList;
+      },
+      switchIndex: state => {
+        return state.views.app.switchIndex;
       }
     })
   },
 
-  watch: {},
+  watch: {
+    whiteList(val) {
+      //这个列表发生变化,就重新设置代理
+      let list = [];
+      for (let i = 0; i < val.length; i++) {
+        let obj = {
+          isOpen: true,
+          domain: val.name,
+          ip: this.switchIndex.address
+        };
+        list.push(obj);
+      }
+      this.$store.commit("views/app/updateProxyList", list);
+    }
+  },
 
   created() {},
 
-  mounted() {
-    console.log(Hash.create(32), "generateHash");
-    if (Storage.get("whiteList")) {
-      this.whiteList = Storage.get("whiteList");
-    }
-  },
+  mounted() {},
 
   destroyed() {},
 
   methods: {
+    doProxy(hostList) {
+      if (this.switchState) {
+        Proxy.setProxy(hostList);
+      } else {
+        Proxy.cancelProxy();
+      }
+    },
     autoSubmitForm() {
       window.chrome.tabs.getSelected(null, function(tab) {
         console.log(tab, "urlurlurl");
@@ -179,8 +198,6 @@ export default {
       } else {
         this.$message.error("网关名称重复, 请修改名称");
       }
-
-      Storage.set("whiteList", this.whiteList);
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
