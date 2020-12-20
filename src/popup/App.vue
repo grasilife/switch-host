@@ -189,20 +189,6 @@ export default {
       });
     },
 
-    getDomain(url) {
-      if (url.indexOf("//") > -1) {
-        let st = url.indexOf("//", 1);
-        let _domain = url.substring(st + 1, url.length);
-        let et = _domain.indexOf("/", 1);
-        _domain = _domain.substring(1, et);
-        let strs = _domain.split(".");
-        return {
-          secondaryDomain: strs[strs.length - 2] + "." + strs[strs.length - 1],
-          domain: _domain
-        };
-      }
-      return url;
-    },
     switchChange() {
       let list = [
         {

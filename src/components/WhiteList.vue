@@ -1,35 +1,47 @@
 <template>
-  <div class="WhiteList">
-    <div class="form">
-      <a-form-model ref="ruleForm" layout="inline" :rules="rules">
-        <a-form-model-item prop="name" class="formStyle">
-          <a-input
-            v-model="ruleForm.url"
-            autocomplete="off"
-            placeholder="请输入domin"
-            style="width:220px;"
-          />
-        </a-form-model-item>
-        <div class="buttonStyle">
-          <a-button type="primary" @click="submitForm('ruleForm')">
-            手动添加
-          </a-button>
-        </div>
-        <div class="buttonStyle">
-          <a-button type="primary" @click="submitForm('ruleForm')">
-            自动添加当前网址
-          </a-button>
-        </div>
-      </a-form-model>
-    </div>
-
+  <div class="addGateway">
+    <a-form-model
+      ref="ruleForm"
+      layout="inline"
+      :model="ruleForm"
+      :rules="rules"
+    >
+      <a-form-model-item prop="name">
+        <a-input
+          v-model="ruleForm.name"
+          autocomplete="off"
+          placeholder="请输入URL"
+        />
+      </a-form-model-item>
+      <a-form-model-item class="buttonStyle">
+        <a-button type="primary" @click="submitForm('ruleForm')">
+          添加网址
+        </a-button>
+        <a-button
+          type="primary"
+          @click="submitForm('ruleForm')"
+          class="addStyle"
+        >
+          添加当前URL到白名单
+        </a-button>
+      </a-form-model-item>
+    </a-form-model>
     <a-table
-      :columns="whiteListColumns"
+      :columns="columns"
       :data-source="whiteList"
       :pagination="false"
       bordered
-      rowKey="domian"
+      rowKey="id"
     >
+      <div slot="operation" slot-scope="record">
+        <template>
+          <div class="handle">
+            <a-button type="danger" @click="gatewayRemove(record)">
+              删除
+            </a-button>
+          </div>
+        </template>
+      </div>
     </a-table>
   </div>
 </template>
@@ -40,7 +52,15 @@ import { Storage } from "@/utils/storage";
 export default {
   name: "WhiteList",
 
-  props: {},
+  props: {
+    data: {
+      type: Array,
+      required: false,
+      default: function() {
+        return [];
+      }
+    }
+  },
 
   mixins: [],
 
@@ -48,31 +68,55 @@ export default {
 
   data() {
     return {
+      editId: "",
+      handleText: "添加",
+      columns: [
+        {
+          title: "Domain",
+          dataIndex: "name",
+          ellipsis: true,
+          align: "center"
+        },
+        {
+          title: "操作",
+          ellipsis: true,
+          width: 120,
+          scopedSlots: { customRender: "operation" },
+          fixed: "right",
+          align: "center"
+        }
+      ],
+      whiteList: [
+        {
+          name: "resource.xesv5.com",
+          id: "wgGdIBNcRtVnNWfuU5IF3h1Dql4hzLLf"
+        },
+        {
+          name: "admin.xesv5.com",
+          id: "3ZXNGcFIrCmRPjxKA8WX5qgAH5s_6YD0"
+        }
+      ],
       ruleForm: {
-        domian: ""
+        name: ""
       },
       rules: {
-        domian: [
+        name: [
           {
             required: true,
-            message: "请输入domin",
+            message: "请输入URL",
+            trigger: ["blur", "change"]
+          },
+          {
+            type: "url",
+            message: "请输入正确的url地址",
             trigger: ["blur", "change"]
           }
         ]
       },
       layout: {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 16 }
-      },
-      whiteList: [],
-      whiteListColumns: [
-        {
-          title: "domain白名单",
-          dataIndex: "domian",
-          ellipsis: true,
-          align: "center"
-        }
-      ]
+        labelCol: { span: 1 },
+        wrapperCol: { span: 18 }
+      }
     };
   },
 
@@ -83,6 +127,7 @@ export default {
   created() {},
 
   mounted() {
+    console.log(Hash.create(32), "generateHash");
     if (Storage.get("whiteList")) {
       this.whiteList = Storage.get("whiteList");
     }
@@ -91,30 +136,70 @@ export default {
   destroyed() {},
 
   methods: {
+    gatewayRemove(record) {
+      console.log(record, "id, record");
+      let target = null;
+      for (let i = 0; i < this.whiteList.length; i++) {
+        if (record.name == this.whiteList[i].name) {
+          target = i;
+          break;
+        }
+      }
+      console.log(target, "target");
+      if (target != null) {
+        console.log(this.whiteList, target, "jahuhauhuauh");
+        this.whiteList.splice(target, 1);
+      }
+      Storage.set("whiteList", this.whiteList);
+    },
+    getDomain(url) {
+      if (url.indexOf("//") > -1) {
+        let st = url.indexOf("//", 1);
+        let _domain = url.substring(st + 1, url.length);
+        let et = _domain.indexOf("/", 1);
+        _domain = _domain.substring(1, et);
+        let domain = _domain.split(":")[0];
+        let strs = _domain.split(".");
+        return {
+          secondaryDomain: strs[strs.length - 2] + "." + strs[strs.length - 1],
+          domain: domain
+        };
+      }
+      return url;
+    },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         //id为列表唯一key
         if (valid) {
+          //将url转换为domain
+          console.log(formName, "formName");
+          let domain = this.getDomain(this.ruleForm.name).domain;
+          console.log(domain, "domaindomaindomain");
           let obj = {
-            ...this.ruleForm,
+            name: domain,
             id: Hash.create(32)
           };
+          console.log(obj, "obj");
           let target = null;
+
           for (let i = 0; i < this.whiteList.length; i++) {
             //校验名称是否重复
-            if (this.ruleForm.name == this.whiteList[i].domian) {
+            if (domain == this.whiteList[i].name) {
               //名称重读
-              target = this.whiteList[i];
+              target = i;
               break;
             }
           }
           if (target == null) {
-            this.gatewayList.push(obj);
-            this.ruleForm.domian = "";
+            this.whiteList.push(obj);
+            this.ruleForm.name = "";
+            this.ruleForm.address = "";
           } else {
-            this.$message.error("domin已经存在白名单中");
+            this.$message.error("网关名称重复, 请修改名称");
           }
+
           Storage.set("whiteList", this.whiteList);
+          this.$emit("submit", this.whiteList);
         } else {
           console.log("error submit!!");
           return false;
@@ -124,29 +209,20 @@ export default {
   }
 };
 </script>
-<style lang="less">
-.WhiteList {
-  .ant-form {
-    width: 100%;
-    height: 100%;
-  }
-}
-</style>
+
 <style lang="less" rel="stylesheet/less" scoped>
-.WhiteList {
-  .form {
-    width: 100%;
-    height: 42px;
-    .formStyle {
-      width: 236px;
-      float: left;
-    }
-    .buttonStyle {
-      float: left;
-      padding-left: 6px;
-      height: 42px;
-      line-height: 42px;
-    }
+.addGateway {
+  padding: 0px 0px 12px 0px;
+  .buttonStyle {
+    float: right;
+    margin-right: 0px;
+  }
+  .addStyle {
+    margin-left: 6px;
+  }
+  .handle {
+    padding-right: 12px;
+    //   float: left;
   }
 }
 </style>
