@@ -194,6 +194,7 @@ export default {
         console.log(this.gatewayList, target, "jahuhauhuauh");
         this.gatewayList.splice(target, 1);
       }
+      this.$emit("change", this.gatewayList);
       Storage.set("gatewayList", this.gatewayList);
     },
     submitForm(formName) {
@@ -262,7 +263,7 @@ export default {
             }
           }
           Storage.set("gatewayList", this.gatewayList);
-          this.$emit("submit", this.gatewayList);
+          this.$emit("change", this.gatewayList);
         } else {
           console.log("error submit!!");
           return false;

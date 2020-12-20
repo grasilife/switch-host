@@ -1,17 +1,28 @@
 <template>
   <div class="SwitchComponent">
     <a-list bordered :data-source="data">
-      <a-list-item slot="renderItem" slot-scope="item">
+      <div v-for="(item, index) in data" :key="index">
         <div>{{ item.name }}</div>
         <div>
           <a-switch
-            :checked="item.state"
+            :v-model="item.state"
             checked-children="开"
             un-checked-children="关"
-            @change="change(item)"
+            @click="click(item)"
           />
         </div>
-      </a-list-item>
+      </div>
+      <!-- <a-list-item slot="renderItem" slot-scope="item">
+        <div>{{ item.name }}</div>
+        <div>
+          <a-switch
+            :v-model="item.state"
+            checked-children="开"
+            un-checked-children="关"
+            @click="click(item)"
+          />
+        </div>
+      </a-list-item> -->
     </a-list>
   </div>
 </template>
@@ -49,8 +60,8 @@ export default {
   destroyed() {},
 
   methods: {
-    change(item) {
-      this.$emit("change", item);
+    click(item) {
+      this.$emit("click", item);
     }
   }
 };

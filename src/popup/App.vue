@@ -26,14 +26,14 @@
           <div class="list" v-if="tabState == 'switch'">
             <SwitchComponent
               :data="gatewayList"
-              @change="envSwitchChange"
+              @click="envSwitchChange"
             ></SwitchComponent>
           </div>
           <div class="list" v-if="tabState == 'whiteList'">
             <WhiteList></WhiteList>
           </div>
           <div class="list" v-if="tabState == 'gateway'">
-            <GatewayHandle @submit="gatewayHandleSubmit"></GatewayHandle>
+            <GatewayHandle @change="gatewayHandleSubmit"></GatewayHandle>
           </div>
           <div class="list" v-if="tabState == 'commonHost'">
             <CommonHost></CommonHost>
@@ -124,15 +124,26 @@ export default {
       this.gatewayList = data;
     },
     envSwitchChange(item) {
-      console.log(item, "开关");
-      for (let i = 0; i < this.gatewayList.length; i++) {
-        if (item.name == this.gatewayList[i].name) {
-          this.gatewayList[i].state = true;
-        } else {
-          this.gatewayList[i].state = false;
-        }
-      }
-      Storage.set("gatewayList", this.gatewayList);
+      console.log(item, item.state, "开关");
+      //   for (let i = 0; i < this.gatewayList.length; i++) {
+      //     if (item.id == this.gatewayList[i].id) {
+      //       console.log(
+      //         this.gatewayList[i].name,
+      //         this.gatewayList[i].state,
+      //         "hauhjfuahu1"
+      //       );
+      //       this.gatewayList[i].state = !item.state;
+      //     } else {
+      //       console.log(
+      //         this.gatewayList[i].name,
+      //         this.gatewayList[i].state,
+      //         "hauhjfuahu"
+      //       );
+      //       this.gatewayList[i].state = item.state;
+      //     }
+      //   }
+      console.log(this.gatewayList, item, item.state, "this.gatewayList");
+      //   Storage.set("gatewayList", this.gatewayList);
     },
     generateHash(data) {
       console.log(data, "");
