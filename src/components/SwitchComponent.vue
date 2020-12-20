@@ -1,45 +1,27 @@
 <template>
   <div class="SwitchComponent">
-    <a-list bordered :data-source="data">
-      <div v-for="(item, index) in data" :key="index">
+    <a-list bordered :data-source="gatewayList">
+      <a-list-item slot="renderItem" slot-scope="item">
         <div>{{ item.name }}</div>
         <div>
           <a-switch
-            :v-model="item.state"
+            :checked="item.state"
             checked-children="开"
             un-checked-children="关"
             @click="click(item)"
           />
         </div>
-      </div>
-      <!-- <a-list-item slot="renderItem" slot-scope="item">
-        <div>{{ item.name }}</div>
-        <div>
-          <a-switch
-            :v-model="item.state"
-            checked-children="开"
-            un-checked-children="关"
-            @click="click(item)"
-          />
-        </div>
-      </a-list-item> -->
+      </a-list-item>
     </a-list>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "SwitchComponent",
 
-  props: {
-    data: {
-      type: Array,
-      required: true,
-      default: function() {
-        return [];
-      }
-    }
-  },
+  props: {},
 
   mixins: [],
 
@@ -49,7 +31,13 @@ export default {
     return {};
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      gatewayList: state => {
+        return state.views.app.gatewayList;
+      }
+    })
+  },
 
   watch: {},
 
@@ -61,6 +49,7 @@ export default {
 
   methods: {
     click(item) {
+      this.$store.commit("views/app/envSwitchChange", item);
       this.$emit("click", item);
     }
   }

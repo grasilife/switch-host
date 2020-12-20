@@ -24,16 +24,13 @@
         </div>
         <div class="container">
           <div class="list" v-if="tabState == 'switch'">
-            <SwitchComponent
-              :data="gatewayList"
-              @click="envSwitchChange"
-            ></SwitchComponent>
+            <SwitchComponent></SwitchComponent>
           </div>
           <div class="list" v-if="tabState == 'whiteList'">
             <WhiteList></WhiteList>
           </div>
           <div class="list" v-if="tabState == 'gateway'">
-            <GatewayHandle @change="gatewayHandleSubmit"></GatewayHandle>
+            <GatewayHandle></GatewayHandle>
           </div>
           <div class="list" v-if="tabState == 'commonHost'">
             <CommonHost></CommonHost>
@@ -46,6 +43,7 @@
 
 <script>
 import { Storage } from "@/utils/storage";
+import { Proxy } from "@/utils/proxy";
 import SwitchComponent from "@/components/SwitchComponent";
 import WhiteList from "@/components/WhiteList";
 import GatewayHandle from "@/components/GatewayHandle";
@@ -74,7 +72,6 @@ export default {
 
   data() {
     return {
-      gatewayList: [],
       switchState: false,
       tabState: "switch",
 
@@ -102,7 +99,6 @@ export default {
   created() {},
 
   mounted() {
-    this.gatewayList = Storage.get("gatewayList");
     // console.log(Hash.create(32), "generateHash");
     // let ppp = this.getDomain("http://admin.xesv5.com/admin");
     // console.log(ppp, "ppp");
@@ -119,85 +115,12 @@ export default {
   destroyed() {},
 
   methods: {
-    gatewayHandleSubmit(data) {
-      console.log(data, "gatewayHandleSubmit");
-      this.gatewayList = data;
-    },
-    envSwitchChange(item) {
-      console.log(item, item.state, "开关");
-      //   for (let i = 0; i < this.gatewayList.length; i++) {
-      //     if (item.id == this.gatewayList[i].id) {
-      //       console.log(
-      //         this.gatewayList[i].name,
-      //         this.gatewayList[i].state,
-      //         "hauhjfuahu1"
-      //       );
-      //       this.gatewayList[i].state = !item.state;
-      //     } else {
-      //       console.log(
-      //         this.gatewayList[i].name,
-      //         this.gatewayList[i].state,
-      //         "hauhjfuahu"
-      //       );
-      //       this.gatewayList[i].state = item.state;
-      //     }
-      //   }
-      console.log(this.gatewayList, item, item.state, "this.gatewayList");
-      //   Storage.set("gatewayList", this.gatewayList);
-    },
-    generateHash(data) {
-      console.log(data, "");
-    },
     doProxy(hostList) {
       if (this.switchState) {
-        this.proxy(hostList);
+        Proxy.setProxy(hostList);
       } else {
-        this.cancelProxy();
+        Proxy.cancelProxy();
       }
-    },
-    proxy(hostsList) {
-      console.log(hostsList, "hostsList");
-      let condition = ``;
-
-      hostsList.forEach(item => {
-        if (item.isOpen && item.domain) {
-          const realDomain = item.domain.replace(/\./g, "\\.");
-          // TODO 解决https的代理问题
-          condition += `
-                if(shExpMatch(url, "http://${realDomain}*")){
-                    return 'PROXY ${item.ip}:80';
-                }
-		    `;
-        }
-      });
-      const script = `var FindProxyForURL = function(url, host){
-						${condition}
-						return 'DIRECT'
-					}
-	`;
-
-      const config = {
-        mode: "pac_script",
-        pacScript: {
-          data: script
-        }
-      };
-
-      window.chrome.proxy.settings.set(
-        { value: config, scope: "regular" },
-        function() {}
-      );
-    },
-
-    /**
-     * 取消代理
-     */
-    cancelProxy() {
-      window.chrome.proxy.settings.set({ value: { mode: "direct" } }, function(
-        e
-      ) {
-        console.log(e);
-      });
     },
 
     switchChange() {

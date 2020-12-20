@@ -53,7 +53,7 @@
 
 <script>
 import { Hash } from "@/utils/generateHash";
-import { Storage } from "@/utils/storage";
+import { mapState } from "vuex";
 export default {
   name: "GatewayHandle",
 
@@ -124,18 +124,6 @@ export default {
           align: "center"
         }
       ],
-      gatewayList: [
-        {
-          name: "灰度环境",
-          address: "124.250.113.18",
-          id: "wgGdIBNcRtVnNWfuU5IF3h1Dql4hzLLf"
-        },
-        {
-          name: "测试环境",
-          address: "120.52.32.211",
-          id: "3ZXNGcFIrCmRPjxKA8WX5qgAH5s_6YD0"
-        }
-      ],
       ruleForm: {
         name: "",
         address: ""
@@ -157,18 +145,19 @@ export default {
     };
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      gatewayList: state => {
+        return state.views.app.gatewayList;
+      }
+    })
+  },
 
   watch: {},
 
   created() {},
 
-  mounted() {
-    console.log(Hash.create(32), "generateHash");
-    if (Storage.get("gatewayList")) {
-      this.gatewayList = Storage.get("gatewayList");
-    }
-  },
+  mounted() {},
 
   destroyed() {},
 
@@ -182,20 +171,8 @@ export default {
     },
     gatewayRemove(record) {
       console.log(record, "id, record");
-      let target = null;
-      for (let i = 0; i < this.gatewayList.length; i++) {
-        if (record.name == this.gatewayList[i].name) {
-          target = i;
-          break;
-        }
-      }
-      console.log(target, "target");
-      if (target != null) {
-        console.log(this.gatewayList, target, "jahuhauhuauh");
-        this.gatewayList.splice(target, 1);
-      }
+      this.$store.commit("views/app/gatewayRemove", record);
       this.$emit("change", this.gatewayList);
-      Storage.set("gatewayList", this.gatewayList);
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -217,7 +194,7 @@ export default {
               }
             }
             if (target == null) {
-              this.gatewayList.push(obj);
+              this.$store.commit("views/app/gatewayDdd", obj);
               this.ruleForm.name = "";
               this.ruleForm.address = "";
             } else {
@@ -242,15 +219,20 @@ export default {
                 console.log(target, this.editId, "target");
                 //如果target是修改项,则能修改
                 if (target == null) {
-                  this.gatewayList[i].name = this.ruleForm.name;
-                  this.gatewayList[i].address = this.ruleForm.address;
+                  this.$store.commit("views/app/gatewayEdit", {
+                    index: i,
+                    data: this.ruleForm
+                  });
+                  console.log(this.ruleForm, "this.ruleForm");
                   this.handleText = "添加";
                   this.$message.success("修改成功");
                   this.ruleForm.name = "";
                   this.ruleForm.address = "";
                 } else if (target.id == this.editId) {
-                  this.gatewayList[i].name = this.ruleForm.name;
-                  this.gatewayList[i].address = this.ruleForm.address;
+                  this.$store.commit("views/app/gatewayEdit", {
+                    index: i,
+                    data: this.ruleForm
+                  });
                   this.handleText = "添加";
                   this.$message.success("修改成功");
                   this.ruleForm.name = "";
@@ -262,7 +244,6 @@ export default {
               }
             }
           }
-          Storage.set("gatewayList", this.gatewayList);
           this.$emit("change", this.gatewayList);
         } else {
           console.log("error submit!!");
