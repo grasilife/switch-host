@@ -8,7 +8,7 @@
             :checked="item.address == switchkey"
             checked-children="开"
             un-checked-children="关"
-            @change="envSwitchChange(item)"
+            @change="change(item)"
           />
         </div>
       </a-list-item>
@@ -51,16 +51,8 @@ export default {
   destroyed() {},
 
   methods: {
-    envSwitchChange(item) {
-      this.switchkey = item.address;
-      for (let i = 0; i < this.gatewayList.length; i++) {
-        if (item.name == this.gatewayList[i].name) {
-          this.gatewayList[i].state = true;
-        } else {
-          this.gatewayList[i].state = false;
-        }
-      }
-      Storage.set("gatewayList", this.gatewayList);
+    change(item) {
+      this.$emit("change", item);
     }
   }
 };

@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { Storage } from "@/utils/storage";
 export default {
   name: "WhiteList",
 
@@ -41,7 +42,11 @@ export default {
 
   created() {},
 
-  mounted() {},
+  mounted() {
+    if (Storage.get("whiteList")) {
+      this.whiteList = Storage.get("whiteList");
+    }
+  },
 
   destroyed() {},
 

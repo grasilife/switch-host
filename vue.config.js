@@ -1,3 +1,6 @@
+"use strict";
+
+const path = require("path");
 module.exports = {
   publicPath: "/",
   outputDir: "chrome-extension",
@@ -25,6 +28,9 @@ module.exports = {
         // cookieDomainRewrite: {}
       }
     }
+  },
+  chainWebpack: config => {
+    config.resolve.alias.set("@", path.join(__dirname, "src"));
   },
   pages: {
     setting: {

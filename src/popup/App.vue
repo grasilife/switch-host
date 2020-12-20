@@ -24,16 +24,16 @@
         </div>
         <div class="container">
           <div class="list" v-if="tabState == 'switch'">
-            <SwitchComponent :data="gatewayList"></SwitchComponent>
+            <SwitchComponent
+              :data="gatewayList"
+              @change="envSwitchChange"
+            ></SwitchComponent>
           </div>
           <div class="list" v-if="tabState == 'whiteList'">
-            <WhiteList
-              :columns="blackListColumns"
-              :data="whiteListColumns"
-            ></WhiteList>
+            <WhiteList></WhiteList>
           </div>
           <div class="list" v-if="tabState == 'gateway'">
-            <GatewayHandle></GatewayHandle>
+            <GatewayHandle @submit="gatewayHandleSubmit"></GatewayHandle>
           </div>
           <div class="list" v-if="tabState == 'commonHost'">
             <CommonHost></CommonHost>
@@ -45,12 +45,11 @@
 </template>
 
 <script>
-import { Storage } from "./utils/storage";
-import { Hash } from "./utils/generateHash";
-import SwitchComponent from "../components/SwitchComponent";
-import WhiteList from "../components/WhiteList";
-import GatewayHandle from "../components/GatewayHandle";
-import CommonHost from "../components/CommonHost";
+import { Storage } from "@/utils/storage";
+import SwitchComponent from "@/components/SwitchComponent";
+import WhiteList from "@/components/WhiteList";
+import GatewayHandle from "@/components/GatewayHandle";
+import CommonHost from "@/components/CommonHost";
 export default {
   name: "App",
 
@@ -76,8 +75,7 @@ export default {
   data() {
     return {
       editName: "",
-      handleText: "添加",
-
+      gatewayList: [],
       switchState: false,
       tabState: "switch",
 
@@ -105,29 +103,41 @@ export default {
   created() {},
 
   mounted() {
-    console.log(Hash.create(32), "generateHash");
-    let ppp = this.getDomain("http://admin.xesv5.com/admin");
-    console.log(ppp, "ppp");
-    if (Storage.get("gatewayList")) {
-      this.gatewayList = Storage.get("gatewayList");
-    }
-    if (Storage.get("blackList")) {
-      this.blackList = Storage.get("blackList");
-    }
-    let domain = document.domain;
-    //如果在白名单则打开
-    for (let i = 0; i < this.blackList.length; i++) {
-      if (domain == this.blackList[i].domain) {
-        this.switchState = true;
-        // this.setProxy(true);
-      }
-    }
+    // console.log(Hash.create(32), "generateHash");
+    // let ppp = this.getDomain("http://admin.xesv5.com/admin");
+    // console.log(ppp, "ppp");
+    // let domain = document.domain;
+    // //如果在白名单则打开
+    // for (let i = 0; i < this.blackList.length; i++) {
+    //   if (domain == this.blackList[i].domain) {
+    //     this.switchState = true;
+    //     // this.setProxy(true);
+    //   }
+    // }
   },
 
   destroyed() {},
 
   methods: {
-    generateHash() {},
+    gatewayHandleSubmit(data) {
+      console.log(data, "gatewayHandleSubmit");
+      this.gatewayList = data;
+    },
+    envSwitchChange(item) {
+      this.$emit("change", item);
+      this.switchkey = item.address;
+      for (let i = 0; i < this.gatewayList.length; i++) {
+        if (item.name == this.gatewayList[i].name) {
+          this.gatewayList[i].state = true;
+        } else {
+          this.gatewayList[i].state = false;
+        }
+      }
+      Storage.set("gatewayList", this.gatewayList);
+    },
+    generateHash(data) {
+      console.log(data, "");
+    },
     doProxy(hostList) {
       if (this.switchState) {
         this.proxy(hostList);

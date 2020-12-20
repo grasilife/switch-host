@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { Hash } from "@/utils/generateHash";
+import { Storage } from "@/utils/storage";
 export default {
   name: "GatewayHandle",
 
@@ -69,6 +71,7 @@ export default {
       }
     };
     return {
+      handleText: "添加",
       columns: [
         {
           title: "网关名称",
@@ -128,7 +131,11 @@ export default {
 
   created() {},
 
-  mounted() {},
+  mounted() {
+    if (Storage.get("gatewayList")) {
+      this.gatewayList = Storage.get("gatewayList");
+    }
+  },
 
   destroyed() {},
 
@@ -159,11 +166,12 @@ export default {
     submitForm(formName) {
       console.log(formName, "formName");
       this.$refs[formName].validate(valid => {
+        //id为列表唯一key
         if (valid) {
           let obj = {
             ...this.ruleForm,
             state: false,
-            id: this.$md5()
+            id: Hash.create(32)
           };
           let target = null;
           for (let i = 0; i < this.gatewayList.length; i++) {
@@ -195,6 +203,7 @@ export default {
             }
           }
           Storage.set("gatewayList", this.gatewayList);
+          this.$emit("submit", this.gatewayList);
         } else {
           console.log("error submit!!");
           return false;
