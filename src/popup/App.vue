@@ -74,7 +74,6 @@ export default {
 
   data() {
     return {
-      editName: "",
       gatewayList: [],
       switchState: false,
       tabState: "switch",
@@ -258,7 +257,7 @@ export default {
 <style lang="less"></style>
 <style lang="less" rel="stylesheet/less" scoped>
 .page-popup {
-  width: 520px;
+  width: 560px;
   //   height: 500px;
   background: #e8eaec;
   padding: 0px 8px 8px 8px;

@@ -26,6 +26,28 @@
         </a-button>
       </a-form-model-item>
     </a-form-model>
+    <a-table
+      :columns="columns"
+      :data-source="gatewayList"
+      :pagination="false"
+      bordered
+      rowKey="id"
+    >
+      <div slot="operation" slot-scope="record">
+        <template>
+          <div class="handle" style="float:left;padding-right:12px;">
+            <a-button type="primary" @click="gatewayEdit(record)">
+              修改
+            </a-button>
+          </div>
+          <div class="handle">
+            <a-button type="danger" @click="gatewayRemove(record)">
+              删除
+            </a-button>
+          </div>
+        </template>
+      </div>
+    </a-table>
   </div>
 </template>
 
@@ -71,8 +93,15 @@ export default {
       }
     };
     return {
+      editId: "",
       handleText: "添加",
       columns: [
+        // {
+        //   title: "id",
+        //   dataIndex: "id",
+        //   ellipsis: true,
+        //   align: "center"
+        // },
         {
           title: "网关名称",
           dataIndex: "name",
@@ -85,10 +114,11 @@ export default {
           ellipsis: true,
           align: "center"
         },
+
         {
           title: "操作",
           ellipsis: true,
-          width: 140,
+          width: 180,
           scopedSlots: { customRender: "operation" },
           fixed: "right",
           align: "center"
@@ -97,11 +127,13 @@ export default {
       gatewayList: [
         {
           name: "灰度环境",
-          address: "124.250.113.18"
+          address: "124.250.113.18",
+          id: "wgGdIBNcRtVnNWfuU5IF3h1Dql4hzLLf"
         },
         {
           name: "测试环境",
-          address: "120.52.32.211"
+          address: "120.52.32.211",
+          id: "3ZXNGcFIrCmRPjxKA8WX5qgAH5s_6YD0"
         }
       ],
       ruleForm: {
@@ -132,6 +164,7 @@ export default {
   created() {},
 
   mounted() {
+    console.log(Hash.create(32), "generateHash");
     if (Storage.get("gatewayList")) {
       this.gatewayList = Storage.get("gatewayList");
     }
@@ -141,11 +174,11 @@ export default {
 
   methods: {
     gatewayEdit(record) {
-      this.handleText = "编辑";
+      this.handleText = "修改";
       console.log(record, "id, record");
       this.ruleForm.name = record.name;
       this.ruleForm.address = record.address;
-      this.editName = record.name;
+      this.editId = record.id;
     },
     gatewayRemove(record) {
       console.log(record, "id, record");
@@ -164,41 +197,30 @@ export default {
       Storage.set("gatewayList", this.gatewayList);
     },
     submitForm(formName) {
-      console.log(formName, "formName");
       this.$refs[formName].validate(valid => {
         //id为列表唯一key
         if (valid) {
-          let obj = {
-            ...this.ruleForm,
-            state: false,
-            id: Hash.create(32)
-          };
-          let target = null;
-          for (let i = 0; i < this.gatewayList.length; i++) {
-            //校验名称是否重复
-            if (this.ruleForm.name == this.gatewayList[i].name) {
-              //名称重读
-              target = i;
-              this.$message.error("网关名称重复, 请修改名称");
-              break;
-            }
-          }
-          if (target == null) {
-            if (this.handleText == "添加") {
-              this.gatewayList.push(obj);
-              this.ruleForm.name = "";
-              this.ruleForm.address = "";
-            } else {
-              for (let i = 0; i < this.gatewayList.length; i++) {
-                if (this.editName == this.gatewayList[i].name) {
-                  this.gatewayList[i].name = this.ruleForm.name;
-                  this.gatewayList[i].address = this.ruleForm.address;
-                  this.handleText = "添加";
-                  this.$message.success("编辑成功");
-                  this.ruleForm.name = "";
-                  this.ruleForm.address = "";
-                  break;
-                }
+          if (this.handleText == "添加") {
+            let obj = {
+              ...this.ruleForm,
+              state: false,
+              id: Hash.create(32)
+            };
+            this.gatewayList.push(obj);
+            this.ruleForm.name = "";
+            this.ruleForm.address = "";
+          } else {
+            //修改
+            for (let i = 0; i < this.gatewayList.length; i++) {
+              if (this.editId == this.gatewayList[i].id) {
+                this.gatewayList[i].name = this.ruleForm.name;
+                this.gatewayList[i].address = this.ruleForm.address;
+                this.handleText = "添加";
+                this.$message.success("修改成功");
+                this.ruleForm.name = "";
+                this.ruleForm.address = "";
+
+                break;
               }
             }
           }
