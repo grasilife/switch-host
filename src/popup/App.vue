@@ -244,14 +244,8 @@ export default {
   created() {},
 
   mounted() {
-    let list = [
-      {
-        isOpen: true,
-        domain: "admin.xesv5.com",
-        ip: "120.52.32.211"
-      }
-    ];
-    this.proxy(list);
+    let ppp = this.getDomain("http://admin.xesv5.com/admin");
+    console.log(ppp, "ppp");
     if (Storage.get("gatewayList")) {
       this.gatewayList = Storage.get("gatewayList");
     }
@@ -263,7 +257,7 @@ export default {
     for (let i = 0; i < this.blackList.length; i++) {
       if (domain == this.blackList[i].domain) {
         this.switchState = true;
-        this.setProxy(true);
+        // this.setProxy(true);
       }
     }
   },
@@ -271,6 +265,13 @@ export default {
   destroyed() {},
 
   methods: {
+    doProxy(hostList) {
+      if (this.switchState) {
+        this.proxy(hostList);
+      } else {
+        this.cancelProxy();
+      }
+    },
     proxy(hostsList) {
       console.log(hostsList, "hostsList");
       let condition = ``;
@@ -393,7 +394,33 @@ export default {
       }
       Storage.set("gatewayList", this.gatewayList);
     },
+    getDomain(url) {
+      if (url.indexOf("//") > -1) {
+        let st = url.indexOf("//", 1);
+        let _domain = url.substring(st + 1, url.length);
+        let et = _domain.indexOf("/", 1);
+        _domain = _domain.substring(1, et);
+        let strs = _domain.split(".");
+        return {
+          secondaryDomain: strs[strs.length - 2] + "." + strs[strs.length - 1],
+          domain: _domain
+        };
+      }
+      return url;
+    },
     switchChange() {
+      let list = [
+        {
+          isOpen: true,
+          domain: this.getDomain("http://admin.xesv5.com/admin"),
+          ip: "120.52.32.211"
+        }
+      ];
+      this.doProxy(list);
+
+      window.chrome.tabs.getSelected(null, function(tab) {
+        console.log(tab, "urlurlurl");
+      });
       let thisp = this;
       console.log(this.switchState);
       //将该域名加到白名单
@@ -424,7 +451,7 @@ export default {
         thisp.blackList.splice(target, 1);
       }
       Storage.set("blackList", this.blackList);
-      this.setProxy(true);
+      //   this.setProxy(true);
     },
     tabClick() {
       console.log(this.tabState);
