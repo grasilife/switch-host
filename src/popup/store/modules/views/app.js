@@ -78,9 +78,11 @@ const mutations = {
   envSwitchChange(state, paylod) {
     state.switchIndex = { ...paylod };
     //当这个环境切换后,更新proxyList
-    for (let i = 0; i < state.proxyList; i++) {
-      state.proxyList[i].ip = state.switchIndex.address;
+    for (let i = 0; i < state.proxyList.length; i++) {
+      console.log(paylod.address, "paylod.address");
+      state.proxyList[i].ip = paylod.address;
     }
+    console.log(paylod, state.proxyList, "haygfuyagyfau");
   },
   whiteListRemove(state, paylod) {
     console.log(paylod, "paylod");
