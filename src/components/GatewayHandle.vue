@@ -181,7 +181,6 @@ export default {
           if (this.handleText == "添加") {
             let obj = {
               ...this.ruleForm,
-              state: false,
               id: Hash.create(32)
             };
             let target = null;

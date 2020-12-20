@@ -45,6 +45,7 @@
 <script>
 import { Hash } from "@/utils/generateHash";
 import { Storage } from "@/utils/storage";
+import { mapState } from "vuex";
 export default {
   name: "WhiteList",
 
@@ -82,16 +83,6 @@ export default {
           align: "center"
         }
       ],
-      whiteList: [
-        {
-          name: "resource.xesv5.com",
-          id: "wgGdIBNcRtVnNWfuU5IF3h1Dql4hzLLf"
-        },
-        {
-          name: "admin.xesv5.com",
-          id: "3ZXNGcFIrCmRPjxKA8WX5qgAH5s_6YD0"
-        }
-      ],
       ruleForm: {
         name: ""
       },
@@ -116,7 +107,13 @@ export default {
     };
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      whiteList: state => {
+        return state.views.app.whiteList;
+      }
+    })
+  },
 
   watch: {},
 
@@ -140,20 +137,7 @@ export default {
       });
     },
     gatewayRemove(record) {
-      console.log(record, "id, record");
-      let target = null;
-      for (let i = 0; i < this.whiteList.length; i++) {
-        if (record.name == this.whiteList[i].name) {
-          target = i;
-          break;
-        }
-      }
-      console.log(target, "target");
-      if (target != null) {
-        console.log(this.whiteList, target, "jahuhauhuauh");
-        this.whiteList.splice(target, 1);
-      }
-      Storage.set("whiteList", this.whiteList);
+      this.$store.commit("views/app/whiteListRemove", record);
     },
     getDomain(url) {
       if (url.indexOf("//") > -1) {
@@ -189,6 +173,7 @@ export default {
       }
       if (target == null) {
         this.whiteList.push(obj);
+        this.$store.commit("views/app/gatewayDdd", obj);
         this.ruleForm.name = "";
         this.ruleForm.address = "";
       } else {
