@@ -42,6 +42,9 @@ export default {
       },
       proxyList: state => {
         return state.views.app.proxyList;
+      },
+      switchState: state => {
+        return state.views.app.switchState;
       }
     })
   },
@@ -55,10 +58,17 @@ export default {
   destroyed() {},
 
   methods: {
+    doProxy(hostList) {
+      if (this.switchState) {
+        Proxy.setProxy(hostList);
+      } else {
+        Proxy.cancelProxy();
+      }
+    },
     click(item) {
       this.$store.commit("views/app/envSwitchChange", item);
       this.$emit("click", item);
-      this.setProxy(this.proxyList);
+      this.doProxy(this.proxyList);
     }
   }
 };

@@ -1,6 +1,7 @@
 // import { Hash } from "@/utils/generateHash";
 // import { message, notification } from "ant-design-vue";
 const state = {
+  switchState: false,
   proxyList: [
     {
       isOpen: true,
@@ -40,6 +41,9 @@ const state = {
   ]
 };
 const mutations = {
+  changeSwitchState(state, paylod) {
+    state.switchState = paylod;
+  },
   updateProxyList(state, paylod) {
     state.proxyList = paylod;
   },

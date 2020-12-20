@@ -117,6 +117,9 @@ export default {
       },
       proxyList: state => {
         return state.views.app.proxyList;
+      },
+      switchState: state => {
+        return state.views.app.switchState;
       }
     })
   },
@@ -134,7 +137,7 @@ export default {
         list.push(obj);
       }
       this.$store.commit("views/app/updateProxyList", list);
-      this.setProxy(this.proxyList);
+      this.doProxy(this.proxyList);
     }
   },
 
@@ -145,6 +148,13 @@ export default {
   destroyed() {},
 
   methods: {
+    doProxy(hostList) {
+      if (this.switchState) {
+        Proxy.setProxy(hostList);
+      } else {
+        Proxy.cancelProxy();
+      }
+    },
     autoSubmitForm() {
       window.chrome.tabs.getSelected(null, function(tab) {
         console.log(tab, "urlurlurl");

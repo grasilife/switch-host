@@ -5,7 +5,7 @@
       <div class="title">环境切换</div>
       <div class="switch">
         <a-switch
-          v-model="switchState"
+          :checked="switchState"
           checked-children="开"
           un-checked-children="关"
           @change="switchChange"
@@ -72,7 +72,6 @@ export default {
 
   data() {
     return {
-      switchState: false,
       tabState: "switch",
 
       list: [
@@ -96,6 +95,9 @@ export default {
     ...mapState({
       proxyList: state => {
         return state.views.app.proxyList;
+      },
+      switchState: state => {
+        return state.views.app.switchState;
       }
     })
   },
@@ -109,12 +111,16 @@ export default {
   destroyed() {},
 
   methods: {
-    switchChange() {
-      if (this.switchState == true) {
-        Proxy.setProxy(this.proxyList);
+    doProxy(hostList) {
+      if (this.switchState) {
+        Proxy.setProxy(hostList);
       } else {
         Proxy.cancelProxy();
       }
+    },
+    switchChange(value) {
+      this.$store.commit("views/app/changeSwitchState", value);
+      this.doProxy(this.proxyList);
     },
     tabClick() {
       console.log(this.tabState);
