@@ -244,6 +244,14 @@ export default {
   created() {},
 
   mounted() {
+    let list = [
+      {
+        isOpen: true,
+        domain: "admin.xesv5.com",
+        ip: "120.52.32.211"
+      }
+    ];
+    this.proxy(list);
     if (Storage.get("gatewayList")) {
       this.gatewayList = Storage.get("gatewayList");
     }
@@ -255,7 +263,7 @@ export default {
     for (let i = 0; i < this.blackList.length; i++) {
       if (domain == this.blackList[i].domain) {
         this.switchState = true;
-        this.setProxy();
+        this.setProxy(true);
       }
     }
   },
@@ -263,71 +271,49 @@ export default {
   destroyed() {},
 
   methods: {
-    getPacScript() {
-      var script = "";
-      let results = this.list.filter(it => it.enable);
-      for (var i = 0; i < results.length; i++) {
-        let info = results[i];
-        script += i === 0 ? "if" : "else if";
-        if (info.domain.indexOf("/") > 0) {
-          script +=
-            '(shExpMatch(url, "http://' +
-            info.domain +
-            '") || shExpMatch(url, "https://' +
-            info.domain +
-            '"))';
-        } else if (info.domain.indexOf("*") > -1) {
-          script += '(shExpMatch(host, "' + info.domain + '"))';
-        } else {
-          script += '(host == "' + info.domain + '")';
-        }
-        script += '{return "PROXY ' + info.target + '; DIRECT";}\n';
-      }
-      if (script) script += 'else { return "DIRECT"; }';
+    proxy(hostsList) {
+      console.log(hostsList, "hostsList");
+      let condition = ``;
 
-      let data = `
-function FindProxyForURL(url,host){
-  if(shExpMatch(url, "http:*") || shExpMatch(url, "https:*")){
-    ${script}
-  } else {
-    return "DIRECT";
-  }
-}
-      `;
-      return data;
-    },
-    setPacScript() {
-      //核心函数,如果符合条件就走带来
-      if (this.switchState == true) {
-        let domain = document.domain;
-        let target = null;
-        for (let i = 0; i < this.gatewayList.length; i++) {
-          if (this.gatewayList[i].state == true) {
-            this.gatewayList[i].state = true;
-            target = this.gatewayList[i].address;
-          }
+      hostsList.forEach(item => {
+        if (item.isOpen && item.domain) {
+          const realDomain = item.domain.replace(/\./g, "\\.");
+          // TODO 解决https的代理问题
+          condition += `
+                if(shExpMatch(url, "http://${realDomain}*")){
+                    return 'PROXY ${item.ip}:80';
+                }
+		    `;
         }
-        if (target != null) {
-          let data = `
-               function FindProxyForURL(url,host){
-               if(host == "${domain}"){
-              return "PROXY ${target}";
-               } else {
-               return "DIRECT";
-             }
-               }
-        `;
-          console.log(data, "代理函数");
-          return data;
+      });
+      const script = `var FindProxyForURL = function(url, host){
+						${condition}
+						return 'DIRECT'
+					}
+	`;
+
+      const config = {
+        mode: "pac_script",
+        pacScript: {
+          data: script
         }
-      }
+      };
+
+      window.chrome.proxy.settings.set(
+        { value: config, scope: "regular" },
+        function() {}
+      );
     },
-    setProxy(enable) {
-      let config = enable
-        ? { mode: "pac_script", pacScript: { data: this.getPacScript() } }
-        : { mode: "system" };
-      window.chrome.proxy.settings.set({ scope: "regular", value: config });
-      // this.refreshDataForBk()
+
+    /**
+     * 取消代理
+     */
+    cancelProxy() {
+      window.chrome.proxy.settings.set({ value: { mode: "direct" } }, function(
+        e
+      ) {
+        console.log(e);
+      });
     },
     gatewayEdit(record) {
       this.handleText = "编辑";
@@ -438,7 +424,7 @@ function FindProxyForURL(url,host){
         thisp.blackList.splice(target, 1);
       }
       Storage.set("blackList", this.blackList);
-      this.setProxy();
+      this.setProxy(true);
     },
     tabClick() {
       console.log(this.tabState);
