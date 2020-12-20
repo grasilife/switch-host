@@ -5,7 +5,7 @@
         <div>{{ item.name }}</div>
         <div>
           <a-switch
-            :checked="item.state"
+            :checked="item.id == switchIndex.id"
             checked-children="开"
             un-checked-children="关"
             @click="click(item)"
@@ -35,6 +35,9 @@ export default {
     ...mapState({
       gatewayList: state => {
         return state.views.app.gatewayList;
+      },
+      switchIndex: state => {
+        return state.views.app.switchIndex;
       }
     })
   },

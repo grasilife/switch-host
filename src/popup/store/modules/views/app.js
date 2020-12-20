@@ -1,12 +1,18 @@
 // import { Hash } from "@/utils/generateHash";
 // import { message, notification } from "ant-design-vue";
 const state = {
+  switchIndex: {
+    name: "灰度环境",
+    address: "124.250.113.18",
+    id: "wgGdIBNcRtVnNWfuU5IF3h1Dql4hzLLf",
+    state: true
+  },
   gatewayList: [
     {
       name: "灰度环境",
       address: "124.250.113.18",
       id: "wgGdIBNcRtVnNWfuU5IF3h1Dql4hzLLf",
-      state: false
+      state: true
     },
     {
       name: "测试环境",
@@ -41,15 +47,7 @@ const mutations = {
     state.gatewayList[paylod.index].address = paylod.data.address;
   },
   envSwitchChange(state, paylod) {
-    console.log(paylod, "切换环境");
-    for (let i = 0; i < state.gatewayList.length; i++) {
-      if (paylod.id == state.gatewayList[i].id) {
-        state.gatewayList[i].state = !paylod.state;
-      } else {
-        state.gatewayList[i].state = paylod.state;
-      }
-    }
-    console.log(state.gatewayList, paylod, paylod.state, "this.gatewayList");
+    state.switchIndex = { ...paylod };
   }
 };
 const actions = {};
