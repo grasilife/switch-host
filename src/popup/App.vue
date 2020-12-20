@@ -199,9 +199,6 @@ export default {
       ];
       this.doProxy(list);
 
-      window.chrome.tabs.getSelected(null, function(tab) {
-        console.log(tab, "urlurlurl");
-      });
       let thisp = this;
       console.log(this.switchState);
       //将该域名加到白名单

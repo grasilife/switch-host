@@ -17,11 +17,7 @@
         <a-button type="primary" @click="submitForm('ruleForm')">
           添加网址
         </a-button>
-        <a-button
-          type="primary"
-          @click="submitForm('ruleForm')"
-          class="addStyle"
-        >
+        <a-button type="primary" @click="autoSubmitForm" class="addStyle">
           添加当前URL到白名单
         </a-button>
       </a-form-model-item>
@@ -136,6 +132,13 @@ export default {
   destroyed() {},
 
   methods: {
+    autoSubmitForm() {
+      window.chrome.tabs.getSelected(null, function(tab) {
+        console.log(tab, "urlurlurl");
+        let domain = this.getDomain(tab.url).domain;
+        this.add(domain);
+      });
+    },
     gatewayRemove(record) {
       console.log(record, "id, record");
       let target = null;
@@ -167,6 +170,33 @@ export default {
       }
       return url;
     },
+    add(domain) {
+      console.log(domain, "domaindomaindomain");
+      let obj = {
+        name: domain,
+        id: Hash.create(32)
+      };
+      console.log(obj, "obj");
+      let target = null;
+
+      for (let i = 0; i < this.whiteList.length; i++) {
+        //校验名称是否重复
+        if (domain == this.whiteList[i].name) {
+          //名称重读
+          target = i;
+          break;
+        }
+      }
+      if (target == null) {
+        this.whiteList.push(obj);
+        this.ruleForm.name = "";
+        this.ruleForm.address = "";
+      } else {
+        this.$message.error("网关名称重复, 请修改名称");
+      }
+
+      Storage.set("whiteList", this.whiteList);
+    },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         //id为列表唯一key
@@ -174,31 +204,7 @@ export default {
           //将url转换为domain
           console.log(formName, "formName");
           let domain = this.getDomain(this.ruleForm.name).domain;
-          console.log(domain, "domaindomaindomain");
-          let obj = {
-            name: domain,
-            id: Hash.create(32)
-          };
-          console.log(obj, "obj");
-          let target = null;
-
-          for (let i = 0; i < this.whiteList.length; i++) {
-            //校验名称是否重复
-            if (domain == this.whiteList[i].name) {
-              //名称重读
-              target = i;
-              break;
-            }
-          }
-          if (target == null) {
-            this.whiteList.push(obj);
-            this.ruleForm.name = "";
-            this.ruleForm.address = "";
-          } else {
-            this.$message.error("网关名称重复, 请修改名称");
-          }
-
-          Storage.set("whiteList", this.whiteList);
+          this.add(domain);
           this.$emit("submit", this.whiteList);
         } else {
           console.log("error submit!!");
