@@ -206,20 +206,57 @@ export default {
               state: false,
               id: Hash.create(32)
             };
-            this.gatewayList.push(obj);
-            this.ruleForm.name = "";
-            this.ruleForm.address = "";
+            let target = null;
+            for (let i = 0; i < this.gatewayList.length; i++) {
+              //校验名称是否重复
+              if (this.ruleForm.name == this.gatewayList[i].name) {
+                //名称重读
+                target = i;
+                break;
+              }
+            }
+            if (target == null) {
+              this.gatewayList.push(obj);
+              this.ruleForm.name = "";
+              this.ruleForm.address = "";
+            } else {
+              this.$message.error("网关名称重复, 请修改名称");
+            }
           } else {
             //修改
             for (let i = 0; i < this.gatewayList.length; i++) {
               if (this.editId == this.gatewayList[i].id) {
-                this.gatewayList[i].name = this.ruleForm.name;
-                this.gatewayList[i].address = this.ruleForm.address;
-                this.handleText = "添加";
-                this.$message.success("修改成功");
-                this.ruleForm.name = "";
-                this.ruleForm.address = "";
+                let target = null;
+                for (let i = 0; i < this.gatewayList.length; i++) {
+                  //校验名称是否重复
+                  //不校验自己和自己的值
+                  if (this.ruleForm.name == this.gatewayList[i].name) {
+                    console.log(this.ruleForm.name, "this.ruleForm.name");
+                    //名称重读
+                    target = this.gatewayList[i];
 
+                    break;
+                  }
+                }
+                console.log(target, this.editId, "target");
+                //如果target是修改项,则能修改
+                if (target == null) {
+                  this.gatewayList[i].name = this.ruleForm.name;
+                  this.gatewayList[i].address = this.ruleForm.address;
+                  this.handleText = "添加";
+                  this.$message.success("修改成功");
+                  this.ruleForm.name = "";
+                  this.ruleForm.address = "";
+                } else if (target.id == this.editId) {
+                  this.gatewayList[i].name = this.ruleForm.name;
+                  this.gatewayList[i].address = this.ruleForm.address;
+                  this.handleText = "添加";
+                  this.$message.success("修改成功");
+                  this.ruleForm.name = "";
+                  this.ruleForm.address = "";
+                } else {
+                  this.$message.error("网关名称重复, 请修改名称");
+                }
                 break;
               }
             }
