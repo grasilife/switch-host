@@ -84,6 +84,9 @@ const mutations = {
     }
     console.log(paylod, state.proxyList, "haygfuyagyfau");
   },
+  whiteListAdd(state, paylod) {
+    state.whiteList.push(paylod);
+  },
   whiteListRemove(state, paylod) {
     console.log(paylod, "paylod");
     let target = null;

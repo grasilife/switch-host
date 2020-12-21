@@ -160,25 +160,25 @@ export default {
         console.log(tab, "urlurlurl");
         let domain = this.getDomain(tab.url).domain;
         this.add(domain);
+        this.$message.success("Domain添加成功");
       });
     },
     gatewayRemove(record) {
       this.$store.commit("views/app/whiteListRemove", record);
     },
     getDomain(url) {
-      if (url.indexOf("//") > -1) {
-        let st = url.indexOf("//", 1);
-        let _domain = url.substring(st + 1, url.length);
-        let et = _domain.indexOf("/", 1);
-        _domain = _domain.substring(1, et);
-        let domain = _domain.split(":")[0];
-        let strs = _domain.split(".");
-        return {
-          secondaryDomain: strs[strs.length - 2] + "." + strs[strs.length - 1],
-          domain: domain
-        };
+      let domain = "";
+      let st = url.split("//")[1];
+      console.log(st, "ststst");
+      let domainAndport = st.split("/")[0];
+      if (domainAndport.includes(":")) {
+        domain = domainAndport.split(":")[0];
+      } else {
+        domain = domainAndport;
       }
-      return url;
+      console.log(domain, "domain");
+
+      return domain;
     },
     add(domain) {
       console.log(domain, "domaindomaindomain");
@@ -198,12 +198,11 @@ export default {
         }
       }
       if (target == null) {
-        this.whiteList.push(obj);
-        this.$store.commit("views/app/gatewayDdd", obj);
+        this.$store.commit("views/app/whiteListAdd", obj);
         this.ruleForm.name = "";
-        this.ruleForm.address = "";
+        this.$message.success("Domain添加成功");
       } else {
-        this.$message.error("网关名称重复, 请修改名称");
+        this.$message.error("白名单中已经存在该Domain,不用再添加");
       }
     },
     submitForm(formName) {
@@ -212,7 +211,7 @@ export default {
         if (valid) {
           //将url转换为domain
           console.log(formName, "formName");
-          let domain = this.getDomain(this.ruleForm.name).domain;
+          let domain = this.getDomain(this.ruleForm.name);
           this.add(domain);
           this.$emit("submit", this.whiteList);
         } else {
