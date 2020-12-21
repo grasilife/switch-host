@@ -12,32 +12,30 @@
         />
       </div>
     </div>
-    <a-card :bordered="false" class="card">
-      <div>
-        <div class="tabContainer">
-          <a-tabs @change="tabClick" v-model="tabState">
-            <a-tab-pane key="switch" tab="切换"> </a-tab-pane>
-            <a-tab-pane key="whiteList" tab="白名单"> </a-tab-pane>
-            <a-tab-pane key="gateway" tab="网关"> </a-tab-pane>
-            <!-- <a-tab-pane key="commonHost" tab="公共host"> </a-tab-pane> -->
-          </a-tabs>
+    <div class="card">
+      <div class="tabContainer">
+        <a-tabs @change="tabClick" v-model="tabState">
+          <a-tab-pane key="switch" tab="切换"> </a-tab-pane>
+          <a-tab-pane key="whiteList" tab="白名单"> </a-tab-pane>
+          <a-tab-pane key="gateway" tab="网关"> </a-tab-pane>
+          <!-- <a-tab-pane key="commonHost" tab="公共host"> </a-tab-pane> -->
+        </a-tabs>
+      </div>
+      <div class="container">
+        <div class="list" v-if="tabState == 'switch'">
+          <SwitchComponent></SwitchComponent>
         </div>
-        <div class="container">
-          <div class="list" v-if="tabState == 'switch'">
-            <SwitchComponent></SwitchComponent>
-          </div>
-          <div class="list" v-if="tabState == 'whiteList'">
-            <WhiteList></WhiteList>
-          </div>
-          <div class="list" v-if="tabState == 'gateway'">
-            <GatewayHandle></GatewayHandle>
-          </div>
-          <div class="list" v-if="tabState == 'commonHost'">
-            <CommonHost></CommonHost>
-          </div>
+        <div class="list" v-if="tabState == 'whiteList'">
+          <WhiteList></WhiteList>
+        </div>
+        <div class="list" v-if="tabState == 'gateway'">
+          <GatewayHandle></GatewayHandle>
+        </div>
+        <div class="list" v-if="tabState == 'commonHost'">
+          <CommonHost></CommonHost>
         </div>
       </div>
-    </a-card>
+    </div>
   </div>
 </template>
 
@@ -135,7 +133,7 @@ export default {
 <style lang="less" rel="stylesheet/less" scoped>
 .page-popup {
   width: 560px;
-  //   height: 500px;
+  height: 530px;
   background: #e8eaec;
   padding: 0px 8px 8px 8px;
   .titleContiner {
@@ -143,7 +141,7 @@ export default {
     padding: 8px 0px 0px 0px;
 
     width: 100%;
-    // float: left;
+    float: left;
     .image {
       width: 32px;
       height: 32px;
@@ -162,16 +160,19 @@ export default {
     }
   }
   .card {
-    // height: calc(100% - 60px);
+    height: calc(100% - 60px);
     width: 100%;
-    overflow: auto;
-    // float: left;
+    background: #fff;
+    padding: 12px;
+    float: left;
     .tabContainer {
       height: 52px;
       width: 100%;
     }
     .container {
-      //   height: calc(100% - 52px);
+      overflow: auto;
+      height: calc(100% - 52px);
+      overflow: auto;
       width: 100%;
       .title {
         text-align: left;
