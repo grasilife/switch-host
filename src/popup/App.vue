@@ -106,7 +106,10 @@ export default {
 
   created() {},
 
-  mounted() {},
+  mounted() {
+    //初始化prxoy
+    this.doProxy(this.proxyList);
+  },
 
   destroyed() {},
 
