@@ -18,7 +18,7 @@
           <a-tab-pane key="switch" tab="切换"> </a-tab-pane>
           <a-tab-pane key="whiteList" tab="白名单"> </a-tab-pane>
           <a-tab-pane key="gateway" tab="网关"> </a-tab-pane>
-          <!-- <a-tab-pane key="commonHost" tab="公共host"> </a-tab-pane> -->
+          <a-tab-pane key="commonHost" tab="设置"> </a-tab-pane>
         </a-tabs>
       </div>
       <div class="container">

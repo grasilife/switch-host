@@ -1,8 +1,14 @@
 <template>
-  <div class="comp-templete-list"></div>
+  <div class="comp-templete-list">
+    <a-button type="primary" @click="downloadJson">
+      Primary
+    </a-button>
+  </div>
 </template>
 
 <script>
+import { saveAs } from "file-saver";
+import { mapState } from "vuex";
 export default {
   name: "CommonHost",
 
@@ -24,7 +30,22 @@ export default {
     return {};
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      proxyList: state => {
+        return state.views.app.proxyList;
+      },
+      switchState: state => {
+        return state.views.app.switchState;
+      },
+      whiteList: state => {
+        return state.views.app.whiteList;
+      },
+      gatewayList: state => {
+        return state.views.app.gatewayList;
+      }
+    })
+  },
 
   watch: {},
 
@@ -34,7 +55,18 @@ export default {
 
   destroyed() {},
 
-  methods: {}
+  methods: {
+    // 导出生成json文件
+    downloadJson() {
+      let data = {
+        whiteList: this.whiteList,
+        proxyList: this.proxyList,
+        gatewayList: this.gatewayList
+      };
+      var blob = new Blob([JSON.stringify(data)], { type: "" });
+      saveAs(blob, "switchHost.json");
+    }
+  }
 };
 </script>
 
