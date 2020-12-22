@@ -8,7 +8,7 @@ export const Proxy = {
         const realDomain = item.domain.replace(/\./g, "\\.");
         // TODO 解决https的代理问题
         condition += `
-                if(shExpMatch(url, "http://${realDomain}*")){
+                if(shExpMatch(url, "http://${realDomain}*")||shExpMatch(url, "https://${realDomain}*")){
                     return 'PROXY ${item.ip}:80';
                 }
 		    `;
