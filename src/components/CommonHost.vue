@@ -1,7 +1,7 @@
 <template>
   <div class="comp-templete-list">
     <a-button type="primary" @click="downloadJson">
-      Primary
+      导出数据
     </a-button>
   </div>
 </template>

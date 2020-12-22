@@ -126,16 +126,19 @@ export default {
 
   watch: {
     whiteList(val) {
+      console.log(val, "valvalvalvalval");
       //这个列表发生变化,就重新设置代理
       let list = [];
       for (let i = 0; i < val.length; i++) {
         let obj = {
           isOpen: true,
-          domain: val.name,
+          domain: val[i].name,
           ip: this.switchIndex.address
         };
+        console.log(obj, "objobjobjobj");
         list.push(obj);
       }
+
       this.$store.commit("views/app/updateProxyList", list);
       this.doProxy(this.proxyList);
     }
